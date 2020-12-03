@@ -1,1 +1,121 @@
-<p>[this should be a weather app when I'm done]</p>
+<head>
+    <title>Weather App</title>
+    <style>
+        .title{
+        text-align: center;
+        font-family: Lucida Console;
+        border-style: none none solid none;
+        width: 25%;
+        font-size: 36px;
+        }
+        #locationForm{
+        width: 200px;
+        float: left;
+        }
+        #submitButton{
+        margin: 10px
+        }
+        #warning{
+        color: red;
+        }
+        #weatherDiv{
+        float: right;
+        }
+    </style>
+</head>
+<body>
+  <h1 class="title">Weather App</h1>
+  
+  <div id="locationForm">
+  <label for="country">Country</label>
+  <input type="text" id="country">
+  </input>
+  
+  <label for="state">State (optional)</label>
+  <input type="text" id="state"></input>
+
+  <label for="city">City</label>
+  <input type="text" id="city"></input>
+
+  <label for="datetime">Date</label>
+  <input type="date" id="datetime"></input>
+<label id="warning"></label>
+<input type="submit" id="submitButton" onclick="Submit()"></input>
+</div id="weatherDiv">
+<div id="weatherDisplay">
+  <p id="weather">this is where the weather goes</p>
+</div>
+  
+</body>
+<script>
+
+var country = document.getElementById("country")
+var state = document.getElementById("state");
+var city = document.getElementById("city");
+var date = document.getElementById("datetime")
+
+function Submit(){
+  SubmissionError("");
+  if (city.value == ""){
+    SubmissionError("You need to specify a city!")
+  }
+  else if (country.value == ""){
+    SubmissionError("You need to specify a country!")
+  }
+  else if (date.value == ""){
+    SubmissionError("You need to specify a date!")
+  }
+  else {
+    
+    var loc = [country.value, state.value, city.value];
+    console.log(date.value);
+    getWeather(loc);
+  }
+}
+
+function SubmissionError(error){
+  document.getElementById("warning").innerHTML = error;
+}
+
+function getWeather(loc){
+  console.log("executing getweather")
+  
+  var countryVal = loc[0]
+  var stateVal = loc[1]
+  var cityVal = loc[2]
+  var dateVal = date.value;
+  console.log(dateVal)
+  
+  
+fetch(`https://visual-crossing-weather.p.rapidapi.com/history?startDateTime=${dateVal}T00%3A00%3A00&aggregateHours=24&location=${cityVal}%2C${stateVal}%2C${countryVal}&endDateTime=${dateVal}T00%3A00%3A00&unitGroup=us&dayStartTime=8%3A00%3A00&contentType=json&dayEndTime=17%3A00%3A00&shortColumnNames=0`, {
+	"method": "GET",
+	"headers": {
+		"x-rapidapi-key": "d25cba07bcmshe19496f3e34a361p19a249jsn63e00d0d4d88",
+		"x-rapidapi-host": "visual-crossing-weather.p.rapidapi.com"
+	}
+})
+.then(response => {
+	console.log(response);
+    return response.json();
+})
+.then(data => {
+    console.log(data);
+    locationKey = `${cityVal},${stateVal},${countryVal}`
+    console.log(data.locations[locationKey].values);
+    display(data.locations[locationKey].values);
+})
+.catch(err => {
+	console.error(err);
+  SubmissionError(err);
+});
+}
+
+function display(values){
+    const weatherBox = document.getElementById("weather")
+    weatherBox.innerHTML = `${city.value}, ${country.value}: ${FtoC(values[0].temp)}°C`;
+}
+
+function FtoC(temp){
+    return Math.round((temp - 32)*50/9)/10
+}
+</script>
