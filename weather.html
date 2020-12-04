@@ -39,8 +39,14 @@
 
   <label for="datetime">Date</label>
   <input type="date" id="datetime"></input>
+
+  <label for="key">Key</label>
+<input type="text" id="key"></input>
+
 <label id="warning"></label>
 <input type="submit" id="submitButton" onclick="Submit()"></input>
+
+
 </div id="weatherDiv">
 <div id="weatherDisplay">
   <p id="weather">this is where the weather goes</p>
@@ -53,6 +59,7 @@ var country = document.getElementById("country")
 var state = document.getElementById("state");
 var city = document.getElementById("city");
 var date = document.getElementById("datetime")
+var key = document.getElementById("key")
 
 function Submit(){
   SubmissionError("");
@@ -64,6 +71,9 @@ function Submit(){
   }
   else if (date.value == ""){
     SubmissionError("You need to specify a date!")
+  }
+  else if (key.value == ""){
+    SubmissionError("You need a valid Visual Crossing Weather API key!")
   }
   else {
     
@@ -84,13 +94,13 @@ function getWeather(loc){
   var stateVal = loc[1]
   var cityVal = loc[2]
   var dateVal = date.value;
+  var keyVal = key.value;
   console.log(dateVal)
-  
   
 fetch(`https://visual-crossing-weather.p.rapidapi.com/history?startDateTime=${dateVal}T00%3A00%3A00&aggregateHours=24&location=${cityVal}%2C${stateVal}%2C${countryVal}&endDateTime=${dateVal}T00%3A00%3A00&unitGroup=us&dayStartTime=8%3A00%3A00&contentType=json&dayEndTime=17%3A00%3A00&shortColumnNames=0`, {
 	"method": "GET",
 	"headers": {
-		"x-rapidapi-key": "",
+		"x-rapidapi-key": keyVal,
 		"x-rapidapi-host": "visual-crossing-weather.p.rapidapi.com"
 	}
 })
